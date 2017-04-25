@@ -22,7 +22,7 @@ import com.vaadin.shared.ui.Connect;
 
 @SuppressWarnings("serial")
 @Connect(GridsterLayout.class)
-@JavaScript({ "jquery-1.11.3.min.js", "gridster.js" })
+@JavaScript({ "jquery-1.11.3.min.js", "jquery.gridster.with-extras.js" })
 public class GridsterLayoutConnector extends AbstractLayoutConnector implements GridsterListener {
 
 	GridsterLayoutServerRpc rpc = RpcProxy.create(GridsterLayoutServerRpc.class, this);
@@ -30,15 +30,12 @@ public class GridsterLayoutConnector extends AbstractLayoutConnector implements 
 	private final List<Connector> attachedChildren = new ArrayList<Connector>();
 
 	public GridsterLayoutConnector() {
-
 	}
 
 	@Override
 	protected Widget createWidget() {
 		final VGridsterLayout w = GWT.create(VGridsterLayout.class);
-
 		w.setServerRpc(this);
-
 		return w;
 	}
 
@@ -70,14 +67,11 @@ public class GridsterLayoutConnector extends AbstractLayoutConnector implements 
 	@Override
 	public void onConnectorHierarchyChange(final ConnectorHierarchyChangeEvent event) {
 		getWidget().setConfig(getState().config);
-
 		for (final ComponentConnector child : getChildComponents()) {
 			if (attachedChildren.contains(child)) {
 				continue;
 			}
-
 			final GridsterWidget gridsterWidget = getState().children.get(child);
-
 			getWidget().addWidget(gridsterWidget.getId(), child.getWidget(), gridsterWidget.getPosition());
 			attachedChildren.add(child);
 		}
@@ -97,11 +91,9 @@ public class GridsterLayoutConnector extends AbstractLayoutConnector implements 
 
 	private Map<String, GridsterWidgetPosition> getPositions() {
 		final Map<String, GridsterWidgetPosition> positions = new HashMap<String, GridsterWidgetPosition>();
-
 		for (final GridsterWidget w : getState().children.values()) {
 			positions.put(w.getId(), getWidget().getPositions(w.getId()));
 		}
-
 		return positions;
 	}
 
@@ -114,5 +106,4 @@ public class GridsterLayoutConnector extends AbstractLayoutConnector implements 
 	public void dragged(final String componentId) {
 		rpc.dragged(componentId, getPositions());
 	}
-
 }

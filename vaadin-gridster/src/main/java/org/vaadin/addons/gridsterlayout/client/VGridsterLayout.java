@@ -74,32 +74,27 @@ public class VGridsterLayout extends ComplexPanel {
 	}
 
 	public void updateCaption(final ComponentConnector paintable) {
-
 	}
 
 	public void addWidget(final String id, final Widget widget, final GridsterWidgetPosition position) {
 		checkInit();
-
 		addNativeWidget(gridsterId, id, position.getCol(), position.getRow(), position.getSizeX(), position.getSizeY());
-
 		add(widget, Document.get().getElementById(id));
 	}
 
 	@Override
 	public boolean remove(final Widget oldChildWidget) {
-
-		// TODO Auto-generated method stub
-		return true;
+		removeNativeWidget(gridsterId, oldChildWidget.asWidget().getElement().getId());
+		return super.remove(oldChildWidget);
 	}
 
 	private void checkInit() {
 		if (initialized || config == null || !isAttached()) {
 			return;
 		}
-
 		initialized = true;
-		initNative(gridsterId, config.getMinCols(), config.getMaxCols(), config.getWidgetBaseDimensionX(), config.getWidgetBaseDimensionY(),
-				config.getWidgetMargins());
+		initNative(gridsterId, config.getMinCols(), config.getMaxCols(), config.getWidgetBaseDimensionX(),
+				config.getWidgetBaseDimensionY(), config.getWidgetMargins());
 	}
 
 	private void onDrag(final String id) {
@@ -112,23 +107,20 @@ public class VGridsterLayout extends ComplexPanel {
 
 	public GridsterWidgetPosition getPositions(final String widgetId) {
 		final Element e = DOM.getElementById(widgetId);
-
 		if (e == null) {
 			return null;
 		}
-
 		final int col = Integer.parseInt(e.getAttribute("data-col"));
 		final int row = Integer.parseInt(e.getAttribute("data-row"));
 		final int sizeX = Integer.parseInt(e.getAttribute("data-sizex"));
 		final int sizeY = Integer.parseInt(e.getAttribute("data-sizey"));
-
 		return new GridsterWidgetPosition(col, row, sizeX, sizeY);
 	}
 
-	private native void initNative(final String gridsterId, final int minCol, final int maxCol, final int widgetWidth, final int widthHeight, final int margins)
+	private native void initNative(final String gridsterId, final int minCol, final int maxCol, final int widgetWidth,
+			final int widthHeight, final int margins)
 	/*-{
 	 var self = this;
-
 	 this.@org.vaadin.addons.gridsterlayout.client.VGridsterLayout::gridster = $wnd.$("#" + gridsterId + " > ul").gridster({
 	 	widget_base_dimensions: [widgetWidth, widthHeight],
 	    widget_margins: [margins, margins],
@@ -137,21 +129,24 @@ public class VGridsterLayout extends ComplexPanel {
 	    max_cols: maxCol,
 	    resize: {
 	    	enabled: true,
-	    	stop: function(e, ui, widget) {
-	    				self.@org.vaadin.addons.gridsterlayout.client.VGridsterLayout::onResize(Ljava/lang/String;)(widget[0].id);
-	    			}
+	    	stop: function(e, ui, widget) {self.@org.vaadin.addons.gridsterlayout.client.VGridsterLayout::onResize(Ljava/lang/String;)(widget[0].id);}
 	    },
 	    draggable: {
-	    	stop: function(e, ui, widget) {
-	    				self.@org.vaadin.addons.gridsterlayout.client.VGridsterLayout::onDrag(Ljava/lang/String;)(e.target.id);
-	    			}
+	    	stop: function(e, ui, widget) {self.@org.vaadin.addons.gridsterlayout.client.VGridsterLayout::onDrag(Ljava/lang/String;)(e.target.id);}
 	    }
 	 }).data('gridster');
 	 }-*/;
 
-	private native void addNativeWidget(final String gridsterId, final String id, final int col, final int row, final int sizeX, final int sizeY) /*-{
-	                                                                                                                                              this.@org.vaadin.addons.gridsterlayout.client.VGridsterLayout::gridster.add_widget('<li id="'+id+'"></li>', sizeX, sizeY, col, row);
-	                                                                                                                                              }-*/;
+	private native void addNativeWidget(final String gridsterId, final String id, final int col, final int row,
+			final int sizeX, final int sizeY)
+	/*-{
+	 this.@org.vaadin.addons.gridsterlayout.client.VGridsterLayout::gridster.add_widget('<li id="'+id+'"></li>', sizeX, sizeY, col, row);
+	}-*/;
+	
+	private native void removeNativeWidget(final String gridsterId, final String id)
+	/*-{
+	 this.@org.vaadin.addons.gridsterlayout.client.VGridsterLayout::gridster.remove_widget($('.gridster li').eq(id));
+	}-*/;
 
 	public GridsterConfig getConfig() {
 		return config;
@@ -159,7 +154,6 @@ public class VGridsterLayout extends ComplexPanel {
 
 	public void setConfig(final GridsterConfig config) {
 		this.config = config;
-
 		checkInit();
 	}
 
